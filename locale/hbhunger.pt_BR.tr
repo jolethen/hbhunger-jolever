@@ -1,0 +1,9 @@
+# textdomain:hbhunger
+Hunger with HUD Bar=Fome com Barra no HUD
+Adds a simple hunger meachanic with satiation, food poisoning and different healing.=Adiciona uma mecânica simples de fome com saturação, intoxicação alimentar e cura diferente.
+Satiation=Saturação
+[<player>] <satiation>=[<jogador>] <saturação>
+Set satiation of player or yourself=Define a saturação para um jogador ou para você mesmo
+Not possible, damage is disabled.=Não é possível, o dano está desabilitado.
+Invalid satiation!=Saturação inválida!
+Player @1 does not exist.=Jogador @1 não existe.
