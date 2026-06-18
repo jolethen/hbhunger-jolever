@@ -166,4 +166,3 @@ end
 
 core.register_on_placenode(hbhunger.handle_node_actions)
 core.register_on_dignode(hbhunger.handle_node_actions)
-
