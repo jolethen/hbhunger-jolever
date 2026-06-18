@@ -167,9 +167,3 @@ end
 core.register_on_placenode(hbhunger.handle_node_actions)
 core.register_on_dignode(hbhunger.handle_node_actions)
 
--- =====================================================================
--- OVERRIDE FOR HBHUNGER (SATIATION BAR 162PX FILL FIX)
--- =====================================================================
-if hb.hudtables["satiation"] then
-	hb.hudtables["satiation"].max_bar_length = 162
-end
