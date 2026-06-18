@@ -186,3 +186,62 @@ core.register_chatcommand("satiation", {
 })
 
 end
+
+-- =====================================================================
+-- THE FINAL OVERRIDE: FORCE 162PX FILL ON HEALTH, BREATH & CUSTOM BARS
+-- =====================================================================
+
+-- 1. FORCE CORE LAYOUT DIMENSION
+hb.settings.max_bar_length = 162
+
+-- 2. DYNAMIC INTERCEPT: Fixes scaling math for every custom bar in memory
+local original_value_to_barlength = hb.value_to_barlength
+function hb.value_to_barlength(value, max)
+	if max > 0 and value >= max then
+		return 162
+	end
+	return original_value_to_barlength(value, max)
+end
+
+-- 3. FORCED RUNTIME RETRO-FIT: Fixes bars that registered before this file finished loading
+for identifier, hudtable in pairs(hb.hudtables) do
+	if hudtable then
+		hudtable.max_bar_length = 162
+	end
+end
+
+-- 4. STABLE LAYER SYNC (Your proven working fix that keeps letters on top)
+local original_change_hudbar = hb.change_hudbar
+function hb.change_hudbar(player, identifier, new_value, new_max_value, new_icon, new_bgicon, new_bar, new_label, new_text_color)
+	local success = original_change_hudbar(player, identifier, new_value, new_max_value, new_icon, new_bgicon, new_bar, new_label, new_text_color)
+	
+	if success and player and player:is_player() then
+		local name = player:get_player_name()
+		local hudtable = hb.get_hudtable(identifier)
+		
+		if hudtable and hudtable.hudids[name] and hudtable.hudids[name].text then
+			player:hud_change(hudtable.hudids[name].text, "z_index", 10)
+		end
+	end
+	return success
+end
+
+-- 5. HP SECURITY LAYER (Caps current HP to Max HP safely)
+local sync_timer = 0
+minetest.register_globalstep(function(dtime)
+	sync_timer = sync_timer + dtime
+	if sync_timer >= 0.15 then
+		sync_timer = 0
+		for _, player in pairs(minetest.get_connected_players()) do
+			if player and player:is_player() then
+				local current_hp = player:get_hp()
+				local max_hp = player:get_properties().hp_max or 20
+				
+				if current_hp > max_hp then
+					player:set_hp(max_hp)
+					hb.change_hudbar(player, "health", max_hp, max_hp)
+				end
+			end
+		end
+	end
+end)
