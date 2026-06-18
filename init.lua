@@ -25,8 +25,8 @@ hbhunger.EXHAUST_DIG = 3  -- exhaustion increased this value after digged node
 hbhunger.EXHAUST_PLACE = 1 -- exhaustion increased this value after placed
 hbhunger.EXHAUST_MOVE = 0.3 -- exhaustion increased this value if player movement detected
 hbhunger.EXHAUST_LVL = 160 -- at what exhaustion player satiation gets lowerd
-hbhunger.SAT_MAX = 30 -- maximum satiation points
-hbhunger.SAT_INIT = 20 -- initial satiation points
+hbhunger.SAT_MAX = 20 -- FIXED: Changed maximum from 30 to 20 for perfect math alignment
+hbhunger.SAT_INIT = 20 -- FIXED: Changed initial from 20 to 20 for perfect math alignment
 hbhunger.SAT_HEAL = 15 -- required satiation points to start healing
 
 
@@ -56,6 +56,14 @@ local function update_hud(player)
 	if h_out ~= h then
 		hbhunger.hunger_out[name] = h
 		hb.change_hudbar(player, "satiation", h)
+		
+		-- OVERRIDE FIX: If full, directly override engine rounding calculations to force full 162px fill length
+		if h >= hbhunger.SAT_MAX then
+			local hudtable = hb.get_hudtable("satiation")
+			if hudtable and hudtable.hudids[name] and hudtable.hudids[name].bar then
+				player:hud_change(hudtable.hudids[name].bar, "number", 162)
+			end
+		end
 	end
 end
 
@@ -95,6 +103,19 @@ core.register_on_joinplayer(function(player)
 	hbhunger.poisonings[name] = 0
 	custom_hud(player)
 	hbhunger.set_hunger_raw(player)
+	
+	-- OVERRIDE FIX: Guarantee full pixel length initialization on join
+	minetest.after(0.5, function()
+		if player and player:is_player() then
+			local current_val = hbhunger.hunger[name] or hbhunger.SAT_INIT
+			if current_val >= hbhunger.SAT_MAX then
+				local hudtable = hb.get_hudtable("satiation")
+				if hudtable and hudtable.hudids[name] and hudtable.hudids[name].bar then
+					player:hud_change(hudtable.hudids[name].bar, "number", 162)
+				end
+			end
+		end
+	end)
 end)
 
 core.register_on_respawnplayer(function(player)
