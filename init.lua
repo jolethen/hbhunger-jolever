@@ -44,8 +44,8 @@ end
 dofile(core.get_modpath("hbhunger").."/hunger.lua")
 dofile(core.get_modpath("hbhunger").."/register_foods.lua")
 
--- register satiation hudbar
-hb.register_hudbar("satiation", 0xFFFFFF, S("Satiation"), { icon = "hbhunger_icon.png", bgicon = "hbhunger_bgicon.png",  bar = "hbhunger_bar.png" }, hbhunger.SAT_INIT, hbhunger.SAT_MAX, false, nil, { format_value = "%.1f", format_max_value = "%d" })
+-- register satiation hudbar (FIXED: max_bar_length = 162 added here)
+hb.register_hudbar("satiation", 0xFFFFFF, S("Satiation"), { icon = "hbhunger_icon.png", bgicon = "hbhunger_bgicon.png",  bar = "hbhunger_bar.png" }, hbhunger.SAT_INIT, hbhunger.SAT_MAX, false, nil, { format_value = "%.1f", format_max_value = "%d", max_bar_length = 162 })
 
 -- update hud elemtens if value has changed
 local function update_hud(player)
